@@ -16,7 +16,19 @@ def atenderClientesSimultaneos(conexao, cliente):
 
         if resposta_cliente_opcao == '1':
             print nome, "escolheu a opcao 1"
+            print"Aguardando", nome, "enviar as informacoes para o envio da mensagem..."
 
+            # cliente informou o destinatario e a mensagem que sera envaiada a ele
+            destinatario = conexao.recv(1024).decode('utf-8')
+            mensagem = conexao.recv(1024).decode('utf-8')
+            
+            # tupla com 3 argumentos
+            lista_de_mensagens.append((destinatario, nome, mensagem))
+
+            print "Mensagem armazenada, esperando", destinatario, "solicitar suas mensagens"
+            conexao.send("Mensagem enviada".encode('utf-8'))
+
+            print(lista_de_mensagens)
         
         elif resposta_cliente_opcao == '2':
             print nome, "escolheu a opcao 2"
