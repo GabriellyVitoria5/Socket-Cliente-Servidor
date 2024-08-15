@@ -24,7 +24,7 @@ while True:
     if resposta_opcao == '1':
         print("\n........... Enviar mensagens para um cliente ...........\n")
         
-       # enviar o nome do destinatario e a mensagem ao servidor
+        # enviar o nome do destinatario e a mensagem ao servidor
         destinatario = raw_input("Informe o nome do destinatario: ")
         soquete.send(destinatario.encode('utf-8'))
         mensagem = raw_input("Digite sua mensagem: ")
@@ -32,10 +32,13 @@ while True:
         
         servidor_resposta_envio = soquete.recv(1024).decode('utf-8')
         print(servidor_resposta_envio)
-       
+
     elif resposta_opcao == '2':
         print("\n........... Listar mensagens recebidas ...........\n")
 
+        # receber mensagens enviadas para o cliente atual com o nome do remetente e a mensagem
+        mensagens_recebidas = soquete.recv(1024).decode('utf-8')
+        print(mensagens_recebidas)
     
     elif resposta_opcao == '3':
         print("\n................. Sair .................\n")

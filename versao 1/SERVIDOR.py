@@ -27,18 +27,38 @@ def atenderClientesSimultaneos(conexao, cliente):
 
             print "Mensagem armazenada, esperando", destinatario, "solicitar suas mensagens"
             conexao.send("Mensagem enviada".encode('utf-8'))
-
-            print(lista_de_mensagens)
         
         elif resposta_cliente_opcao == '2':
-            print nome, "escolheu a opcao 2"
+            print nome, "escolheu a opcao 1"
+            print "Enviando mensagens enviadas para", nome
+            
+            # criando uma lista com as mensagens enviadas para o cliente atual 
+            mensagens_destinatario = list(filter(lambda nome_destinatario: nome_destinatario[0] == nome, lista_de_mensagens))
+           
+            if len(mensagens_destinatario) != 0:
+
+                # ordenar a lista pelo nome do destinatario (argumento 1)
+                mensagens_destinatario.sort()
+                
+                # extraindo dados da tupla para formar a mensagem
+                mensagens = []
+                for mensagem in mensagens_destinatario:
+                    mensagem_string = (mensagem[1] + ": " + mensagem[2])
+                    mensagens.append(mensagem_string)
+                
+                # juntar as mensagens em uma string
+                mensagens_quebra_linha = "\n".join(mensagens)
+
+                conexao.send(mensagens_quebra_linha)
+            else:
+                conexao.send("Voce nao tem mensagens recebidas".encode('utf-8'))
         
         elif resposta_cliente_opcao == '3':
             print nome, " escolheu a opcao 3"
             print "Finalizando conexao com", nome, "..."
-            
             conexao.close()
-            break    
+            break
+            
 
 host = '127.0.0.1'  # endereco IP do Servidor
 porta = 5000        # porta que o servidor esta
