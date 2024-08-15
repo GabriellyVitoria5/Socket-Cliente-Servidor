@@ -11,4 +11,30 @@ soquete.connect(destino)
 nome = raw_input("Informe seu nome: ")
 soquete.send(nome.encode('utf-8'))
 
+# loop do menu de opcoes
+while True:
+        
+    menu = "\n................. Menu .................\n\nEscolha uma das opcoes (1, 2 ou 3)\n1. Enviar mensagem para outro cliente\n2. Listar mensages recebidas\n3. Sair"
+    print(menu)
+
+    # ler a opcao escolhida e enviar ao servidor
+    resposta_opcao = raw_input("\nOpcao escolhida: ")
+    soquete.send(resposta_opcao.encode('utf-8'))
+    
+    if resposta_opcao == '1':
+        print("\n........... Enviar mensagens para um cliente ...........\n")
+        
+       
+    elif resposta_opcao == '2':
+        print("\n........... Listar mensagens recebidas ...........\n")
+
+    
+    elif resposta_opcao == '3':
+        print("\n................. Sair .................\n")
+        print("Encerrando a conexao com o servidor")
+        break
+    
+    else:
+        print("Opcao invalida")
+
 soquete.close()

@@ -8,7 +8,25 @@ def atenderClientesSimultaneos(conexao, cliente):
     # receber o nome do cliente
     nome = conexao.recv(1024).decode("utf-8")
     print "Conectado por:",  nome , cliente
+
+    while True:
+        
+        # receber a escolha do cliente
+        resposta_cliente_opcao = conexao.recv(1024).decode('utf-8')
+
+        if resposta_cliente_opcao == '1':
+            print nome, "escolheu a opcao 1"
+
+        
+        elif resposta_cliente_opcao == '2':
+            print nome, "escolheu a opcao 2"
+        
+        elif resposta_cliente_opcao == '3':
+            print nome, " escolheu a opcao 3"
+            print "Finalizando conexao com", nome, "..."
             
+            conexao.close()
+            break    
 
 host = '127.0.0.1'  # endereco IP do Servidor
 porta = 5000        # porta que o servidor esta
