@@ -20,6 +20,19 @@ def atenderClientesSimultaneos(conexao, cliente):
 
         if resposta_cliente_opcao == '1':
             print nome, "escolheu a opcao 1"
+            
+            # receber o tipo de envio, privado ou para todos online
+            resposta_cliente_envio = conexao.recv(1024).decode('utf-8')
+
+            if resposta_cliente_envio == "n":
+                # entregar a lista de todos que estao conectados
+                print nome, "vai enviar mensagens para todos online"
+            
+            else:
+                # se o cliente conhece outro cliente, nao precisa fazer nada
+                print nome, "vai enviar mensagem privada para um cliente"
+
+
         
         elif resposta_cliente_opcao == '2':
             print nome, "escolheu a opcao 2"
