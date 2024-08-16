@@ -2,6 +2,7 @@ import socket
 import threading
 import time
 import random
+import json
 
 def escutarOutrosClientes(soquete):
      while True:
@@ -69,7 +70,7 @@ def listarMensagensRecebidas():
 # opcao 3
 def listarIPsConhecidos():
     print("\n........... Listar IP de clientes conhecidos ...........\n")
-    print("Nome | Endereco IP | Porta | Status\n")
+    print("Nome | Endereco IP | Porta | Status")
 
     # adicionar opcao do servidor atualizar o status do cliente, se esta online ou nao....
 
@@ -83,9 +84,22 @@ def listarClientesOnline():
     print("\n............. Listar clientes conectados .............\n")
     print("Solicitando ao servidor todos os clientes conectados agora...")
 
-    print("\nNome | Endereco IP | Status\n")
+    # receber os dados dos cliente online e transformar no formato json
     servidor_resposta_clientes_online = soquete_servidor.recv(1024).decode('utf-8')
-    print(servidor_resposta_clientes_online)
+    clientes_online_json = json.loads(servidor_resposta_clientes_online)
+
+    # imprimir dados e atualizar lista de clientes conhecidos
+    print("\nNome | Endereco IP")
+    for cliente, dados in clientes_online_json.items():
+        ip, porta = dados["endereco"]
+        status = dados["status"]
+        print cliente, ",", ip
+        
+        if cliente != nome:
+            endereco_cliente[nome] = {"endereco": (ip, porta), "status": status}
+    
+    print("\nLista de clientes conhecidos atualizada")
+        
 
 # opcao 5
 def desconectarDoServidor():

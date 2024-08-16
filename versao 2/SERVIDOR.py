@@ -1,5 +1,6 @@
 import socket
 import threading
+import json
 
 # o nome vai ser a chave para diferenciar clientes
 lista_clientes = {}
@@ -57,15 +58,13 @@ def atenderClientesSimultaneos(conexao, cliente):
         elif resposta_cliente_opcao == '4':
             print nome, "escolheu a opcao 4"
             
-            clientes_online = []
-            for cliente, dados in lista_clientes.items():
-                ip, porta = dados["endereco"]
-                status = dados["status"]
-                clientes_online.append(cliente + ": " + ip + ", " + status)
+            # filtrar apenas os clientes online
+            clientes_online = {nome: dados for nome, dados in lista_clientes.items() if dados["status"] == "online"}
             
-            # juntar as mensagens em uma string
-            cliente_online_quebra_linha = "\n".join(clientes_online)
-            conexao.send(cliente_online_quebra_linha)
+            clientes_online_json = json.dumps(clientes_online)
+            conexao.send(clientes_online_json.encode('utf-8'))
+
+            print("Dados sobre os clientes online enviados")
            
         elif resposta_cliente_opcao == '5':
             print nome, " escolheu a opcao 5"
@@ -73,7 +72,7 @@ def atenderClientesSimultaneos(conexao, cliente):
 
             # atualizar status do cliente
             lista_clientes[nome] = cliente, 'offline'
-            
+
             print(lista_clientes[nome])
             print(lista_clientes)
 
