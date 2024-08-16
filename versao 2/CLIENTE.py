@@ -81,6 +81,11 @@ def listarIPsConhecidos():
 # opcao 4
 def listarClientesOnline():
     print("\n............. Listar clientes conectados .............\n")
+    print("Solicitando ao servidor todos os clientes conectados agora...")
+
+    print("\nNome | Endereco IP | Status\n")
+    servidor_resposta_clientes_online = soquete_servidor.recv(1024).decode('utf-8')
+    print(servidor_resposta_clientes_online)
 
 # opcao 5
 def desconectarDoServidor():

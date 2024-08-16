@@ -2,7 +2,7 @@ import socket
 import threading
 
 # o nome vai ser a chave para diferenciar clientes
-lista_clientes_online = {}
+lista_clientes = {}
 
 def atenderClientesSimultaneos(conexao, cliente):
     
@@ -11,7 +11,7 @@ def atenderClientesSimultaneos(conexao, cliente):
     print "Conectado por:",  nome , cliente
 
     # atualizar ou criar o cliente no dicionario
-    lista_clientes_online[nome] = cliente, "online"
+    lista_clientes[nome] = {"endereco": cliente, "status": "online"}
 
     while True:
         
@@ -48,7 +48,7 @@ def atenderClientesSimultaneos(conexao, cliente):
         
         elif resposta_cliente_opcao == '2':
             print nome, "escolheu a opcao 2"
-
+            # servidor nao precisa entregar nada para o cliente nessa opcao
 
         elif resposta_cliente_opcao == '3':
             print nome, "escolheu a opcao 3"
@@ -56,16 +56,27 @@ def atenderClientesSimultaneos(conexao, cliente):
 
         elif resposta_cliente_opcao == '4':
             print nome, "escolheu a opcao 4"
-
             
+            clientes_online = []
+            for cliente, dados in lista_clientes.items():
+                ip, porta = dados["endereco"]
+                status = dados["status"]
+                clientes_online.append(cliente + ": " + ip + ", " + status)
             
+            # juntar as mensagens em uma string
+            cliente_online_quebra_linha = "\n".join(clientes_online)
+            conexao.send(cliente_online_quebra_linha)
+           
         elif resposta_cliente_opcao == '5':
             print nome, " escolheu a opcao 5"
             print "Finalizando conexao com", nome, "..."
 
-            lista_clientes_online[nome] = cliente, 'offline'
-            print(lista_clientes_online[nome])
-            print(lista_clientes_online)
+            # atualizar status do cliente
+            lista_clientes[nome] = cliente, 'offline'
+            
+            print(lista_clientes[nome])
+            print(lista_clientes)
+
             conexao.close()
             break
             
