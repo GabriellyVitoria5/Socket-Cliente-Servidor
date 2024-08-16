@@ -69,6 +69,14 @@ def listarMensagensRecebidas():
 # opcao 3
 def listarIPsConhecidos():
     print("\n........... Listar IP de clientes conhecidos ...........\n")
+    print("Nome | Endereco IP | Porta | Status\n")
+
+    # adicionar opcao do servidor atualizar o status do cliente, se esta online ou nao....
+
+    for cliente, dados in endereco_cliente.items():
+        ip, porta = dados["endereco"]
+        status = dados["status"]
+        print cliente, "|", ip,"|", porta, "|", status
 
 # opcao 4
 def listarClientesOnline():
