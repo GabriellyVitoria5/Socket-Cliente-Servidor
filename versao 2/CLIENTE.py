@@ -1,11 +1,13 @@
 import socket
 import threading
 
-def escutarOutrosClientes(conexao):
+def escutarOutrosClientes(soquete):
      while True:
         try:
-            mensagem, ip = conexao.recvfrom(1024)
-            print("\nMensagem recebida de", ip, ":", mensagem.decode())
+            conexao, cliente = soquete.accept()
+            mensagem = conexao.recv(1024)
+            print("\nMensagem recebida de", cliente, ":", mensagem.decode())
+            conexao.close()
         except Exception as e:
             break
         
