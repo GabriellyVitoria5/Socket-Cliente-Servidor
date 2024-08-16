@@ -63,6 +63,8 @@ def enviarMensagens():
 # opcao 2
 def listarMensagensRecebidas():
     print("\n............. Listar mensagens recebidas .............\n")
+    for mensagens in lista_mensagens_recebidas:
+        print(mensagens)
 
 # opcao 3
 def listarIPsConhecidos():
