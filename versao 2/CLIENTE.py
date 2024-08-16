@@ -1,6 +1,7 @@
 import socket
 import threading
 import time
+import random
 
 def escutarOutrosClientes(soquete):
      while True:
@@ -86,7 +87,7 @@ soquete_servidor.connect(destino_servidor)
 
 # criar e abrir conexao com outro clientes
 host_cliente = '127.0.0.1'  
-porta_cliente = 5001 # erro na porta se mais clientes se conectarem, olhar depois!!!!!!!
+porta_cliente = random.randint(5001, 6000) # sortear porta para clientes simultaneaos se conectarem entre si
 soquete_cliente = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 origem = (host_cliente, porta_cliente)
 soquete_cliente.bind(origem)
@@ -100,7 +101,7 @@ endereco_cliente = {} # ip de clientes que ja mandou mensagem antes
 lista_mensagens_recebidas = [] # cliente vai armazenar suas proprias mensagens
 
 # inserir valor de teste no dicionario
-endereco_cliente["joao"] = {"endereco": ('127.0.0.1', 5001), "status": "online"}
+endereco_cliente["joao"] = {"endereco": ('127.0.0.1', porta_cliente), "status": "online"}
 
 # enviar o nome do cliente para o servidor 
 nome = raw_input("Informe seu nome: ")
