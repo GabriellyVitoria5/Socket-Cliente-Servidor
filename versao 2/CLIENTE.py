@@ -9,7 +9,8 @@ def escutarOutrosClientes(soquete):
             print("\nMensagem recebida de", cliente, ":", mensagem.decode())
             conexao.close()
         except Exception as e:
-            break
+            print("Erro ao receber mensagem:", e)
+            continue
         
 
 # criar e abrir conexao com servidor
