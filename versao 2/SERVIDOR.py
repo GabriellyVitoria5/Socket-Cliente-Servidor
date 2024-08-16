@@ -25,13 +25,25 @@ def atenderClientesSimultaneos(conexao, cliente):
             resposta_cliente_envio = conexao.recv(1024).decode('utf-8')
 
             if resposta_cliente_envio == "n":
-                # entregar a lista de todos que estao conectados
+                # entregar a lista de todos os clientes que estao conectados
                 print nome, "vai enviar mensagens para todos online"
             
+                # ...
+
             else:
-                # se o cliente conhece outro cliente, nao precisa fazer nada
                 print nome, "vai enviar mensagem privada para um cliente"
 
+                # caso 1: cliente conhece outro cliente, o servidor nao precisa fazer nada
+                # caso 2: cliente nao tem ip do destinatario
+
+                cliente_conhece_destinatario = conexao.recv(1024).decode('utf-8')
+
+                if cliente_conhece_destinatario == "c":
+                    print(nome, "ja conhece o ip do destinatario")
+                else:
+                    print nome, "precisa de um ip"
+                    destinatario = conexao.recv(1024).decode('utf-8')
+                    print "Destinatario recebido pelo servidor:", destinatario 
 
         
         elif resposta_cliente_opcao == '2':
@@ -52,8 +64,8 @@ def atenderClientesSimultaneos(conexao, cliente):
             print "Finalizando conexao com", nome, "..."
 
             lista_clientes_online[nome] = cliente, 'offline'
-            print( lista_clientes_online[nome])
-            print( lista_clientes_online)
+            print(lista_clientes_online[nome])
+            print(lista_clientes_online)
             conexao.close()
             break
             

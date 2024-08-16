@@ -1,12 +1,15 @@
 import socket
 import threading
+import time
 
 def escutarOutrosClientes(soquete):
      while True:
         try:
+            time.sleep(3) # tempo para o print nao sobrepor o interacao com o menu da thread de conexao com o servidor
             conexao, cliente = soquete.accept()
             mensagem = conexao.recv(1024)
-            print("\nMensagem recebida de", cliente, ":", mensagem.decode())
+            lista_mensagens_recebidas.append(mensagem)
+            print "\n", cliente, "te enviou uma mensagem" 
             conexao.close()
         except Exception as e:
             print("Erro ao receber mensagem:", e)
@@ -21,14 +24,39 @@ def enviarMensagens():
     soquete_servidor.send(escolha_envio.encode('utf-8'))
 
     if escolha_envio == "n":
-        print ("Enviando mensagens para todos online...")
-        # listar todo mundo que mandou...
+        print ("\nEnviando mensagens para todos online...")
+        # pedir ao servidor ip e nome de todos os clientes online....
 
     else:
         # verificar se o destinatario e conhecido
         print ("Enviando mensagem privada...")
-        destinatario = raw_input("Informe o nome do destinatario: ")
+        destinatario = raw_input("\nInforme o nome do destinatario: ")
         
+        if destinatario in endereco_cliente:
+
+            # indicar ao servidor que o cliente e conhecido: 'c'
+            soquete_servidor.send("c".encode('utf-8'))
+
+            # enviar mensagem deireto para o cliente
+            mensagem = raw_input("Digite sua mensagem: ")
+            mensagem_com_nome = nome + ": " + mensagem # se deixar a virgula na hora de enviar entende como uma tupla
+            
+            soquete_enviar_mensagem = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+            destino = (host_cliente, porta_cliente)
+            soquete_enviar_mensagem.connect(destino)
+            soquete_enviar_mensagem.send(mensagem_com_nome.encode('utf-8'))
+            
+            print("\nMensagem enviada")
+
+        else:
+            # pedir ao servidor o endereco do destinatario
+            print("Cliente nao encontrado, solicitando IP ao servidor...")
+
+            # indicar ao servidor que o cliente e conhecido: 'd'
+            soquete_servidor.send("d".encode('utf-8'))
+            soquete_servidor.send(destinatario.encode('utf-8'))
+            
+            time.sleep(10)
         
 
 # opcao 2
@@ -58,7 +86,7 @@ soquete_servidor.connect(destino_servidor)
 
 # criar e abrir conexao com outro clientes
 host_cliente = '127.0.0.1'  
-porta_cliente = 50001 
+porta_cliente = 5001 # erro na porta se mais clientes se conectarem, olhar depois!!!!!!!
 soquete_cliente = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 origem = (host_cliente, porta_cliente)
 soquete_cliente.bind(origem)
@@ -70,6 +98,9 @@ thread_escutar_clientes.start()
 
 endereco_cliente = {} # ip de clientes que ja mandou mensagem antes
 lista_mensagens_recebidas = [] # cliente vai armazenar suas proprias mensagens
+
+# inserir valor de teste no dicionario
+endereco_cliente["joao"] = {"endereco": ('127.0.0.1', 5001), "status": "online"}
 
 # enviar o nome do cliente para o servidor 
 nome = raw_input("Informe seu nome: ")
