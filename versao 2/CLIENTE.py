@@ -62,9 +62,14 @@ def enviarMensagens():
             mensagem = raw_input("Digite sua mensagem: ")
             mensagem_com_nome = nome + ": " + mensagem # se deixar a virgula na hora de enviar entende como uma tupla
             
+            # mantando o socket
             soquete_enviar_mensagem = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-            destino = (host_cliente, porta_cliente)
-            soquete_enviar_mensagem.connect(destino)
+            porta, ip = endereco_cliente[destinatario]["endereco_cliente"]
+            
+            endereco_destinatario = (ip, porta)
+            print(endereco_destinatario)
+            
+            soquete_enviar_mensagem.connect(endereco_destinatario)
             soquete_enviar_mensagem.send(mensagem_com_nome.encode('utf-8'))
             
             print("\nMensagem enviada")
@@ -148,13 +153,14 @@ def listarClientesOnline():
     print(servior_clientes_online)
 
     # imprimir dados e atualizar lista de clientes conhecidos
-    print("\nNome | Endereco IP")
+    print("\nNome | Endereco IP | Porta")
     for cliente, dados in servior_clientes_online.items():
-        ip, porta = dados["endereco_cliente"]
+        porta_c, ip_c = dados["endereco_cliente"]
+        ip_s, porta_s = dados["endereco_servidor"]
         status = dados["status"]
-        print cliente, ",", ip
+        print cliente, ",", ip_c, ",", porta_c
         
-        endereco_cliente[cliente] = {"endereco_cliente": (ip, porta), "status": status}
+        endereco_cliente[cliente] = {"endereco_cliente": (ip_c, porta_c), "endereco_servidor": (ip_s, porta_s),"status": status}
     
     #print("\nLista de clientes conhecidos atualizada")
     

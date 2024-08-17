@@ -9,13 +9,13 @@ def atenderClientesSimultaneos(conexao, cliente):
     
     # receber o nome do cliente 
     nome = conexao.recv(1024).decode("utf-8")
-    porta_cliente = conexao.recv(1024).decode("utf-8")
-    ip_cliente = int(conexao.recv(1024).decode("utf-8"))
+    ip_cliente = conexao.recv(1024).decode("utf-8")
+    porta_cliente = int(conexao.recv(1024).decode("utf-8"))
     
     print "Conectado por:",  nome , cliente
 
     # atualizar ou criar o cliente no dicionario
-    lista_clientes[nome] = {"endereco_cliente": cliente,"endereco_servidor": (ip_cliente, porta_cliente), "status": "online"}
+    lista_clientes[nome] = {"endereco_cliente": (ip_cliente, porta_cliente),"endereco_servidor": cliente, "status": "online"}
 
     while True:
         
@@ -51,7 +51,7 @@ def atenderClientesSimultaneos(conexao, cliente):
                 cliente_conhece_destinatario = conexao.recv(1024).decode('utf-8')
 
                 if cliente_conhece_destinatario == "c":
-                    print(nome, "ja conhece o ip do destinatario")
+                    print nome, "ja conhece o ip do destinatario"
                 else:
                     print nome, "precisa de um ip"
                     destinatario = conexao.recv(1024).decode('utf-8')
