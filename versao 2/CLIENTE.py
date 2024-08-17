@@ -81,37 +81,42 @@ def listarIPsConhecidos():
     servidor_status_cliente_json = soquete_servidor.recv(1024).decode('utf-8')
     servidor_status_cliente = json.loads(servidor_status_cliente_json)
 
-    # atualizar statis
+    # atualizar status
     for cliente, dados in endereco_cliente.items():
         if cliente in servidor_status_cliente:
-            if dados["status"] != servidor_status_cliente[cliente][1]:
-                dados["status"] = servidor_status_cliente[cliente][1]
+            if dados["status"] != servidor_status_cliente[cliente]["status"]:
+                dados["status"] = servidor_status_cliente[cliente]["status"]
 
     for cliente, dados in endereco_cliente.items():
         ip, porta = dados["endereco"]
         status = dados["status"]
         print cliente, "|", ip,"|", porta, "|", status
 
+    #print(endereco_cliente)
+
 # opcao 4
 def listarClientesOnline():
     print("\n............. Listar clientes conectados .............\n")
     print("Solicitando ao servidor todos os clientes conectados agora...")
 
-    # receber os dados dos cliente online e transformar no formato json
-    servidor_resposta_clientes_online = soquete_servidor.recv(1024).decode('utf-8')
-    clientes_online_json = json.loads(servidor_resposta_clientes_online)
+    # receber os dados dos cliente online em json e transformar em dicionario
+    servidor_resposta_clientes_online_json = soquete_servidor.recv(1024).decode('utf-8')
+    servior_clientes_online = json.loads(servidor_resposta_clientes_online_json)
+    print(servior_clientes_online)
 
     # imprimir dados e atualizar lista de clientes conhecidos
     print("\nNome | Endereco IP")
-    for cliente, dados in clientes_online_json.items():
+    for cliente, dados in servior_clientes_online.items():
         ip, porta = dados["endereco"]
         status = dados["status"]
         print cliente, ",", ip
         
-        if cliente != nome:
-            endereco_cliente[nome] = {"endereco": (ip, porta), "status": status}
+        endereco_cliente[cliente] = {"endereco": (ip, porta), "status": status}
     
-    print("\nLista de clientes conhecidos atualizada")
+    
+    #print("\nLista de clientes conhecidos atualizada")
+    
+    #print(endereco_cliente)
         
 
 # opcao 5
@@ -143,7 +148,7 @@ endereco_cliente = {} # ip de clientes que ja mandou mensagem antes
 lista_mensagens_recebidas = [] # cliente vai armazenar suas proprias mensagens
 
 # inserir valor de teste no dicionario
-endereco_cliente["joao"] = {"endereco": ('127.0.0.1', porta_cliente), "status": "online"}
+#endereco_cliente["joao"] = {"endereco": ('127.0.0.1', porta_cliente), "status": "online"}
 
 # enviar o nome do cliente para o servidor 
 nome = raw_input("Informe seu nome: ")
