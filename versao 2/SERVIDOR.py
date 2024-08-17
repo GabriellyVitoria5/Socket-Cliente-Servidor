@@ -54,10 +54,15 @@ def atenderClientesSimultaneos(conexao, cliente):
         elif resposta_cliente_opcao == '3':
             print nome, "escolheu a opcao 3"
 
+            # enviar lista para o cliente fazer a varificacao
+            status_clientes = json.dumps(lista_clientes)
+            conexao.send(status_clientes.encode('utf-8'))
 
         elif resposta_cliente_opcao == '4':
             print nome, "escolheu a opcao 4"
             
+            # erro opcao 4!!!!!!!!!!
+
             # filtrar apenas os clientes online
             clientes_online = {nome: dados for nome, dados in lista_clientes.items() if dados["status"] == "online"}
             

@@ -72,7 +72,17 @@ def listarIPsConhecidos():
     print("\n........... Listar IP de clientes conhecidos ...........\n")
     print("Nome | Endereco IP | Porta | Status")
 
-    # adicionar opcao do servidor atualizar o status do cliente, se esta online ou nao....
+    # atualizar o status dos clientes conhecidos, se estao online ou nao, anted de exibir
+
+    # cliente recebe json do servidor e converte de volta em dicionario
+    servidor_status_cliente_json = soquete_servidor.recv(1024).decode('utf-8')
+    servidor_status_cliente = json.loads(servidor_status_cliente_json)
+
+    # atualizar statis
+    for cliente, dados in endereco_cliente.items():
+        if cliente in servidor_status_cliente:
+            if dados["status"] != servidor_status_cliente[cliente][1]:
+                dados["status"] = servidor_status_cliente[cliente][1]
 
     for cliente, dados in endereco_cliente.items():
         ip, porta = dados["endereco"]
