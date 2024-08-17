@@ -27,7 +27,26 @@ def enviarMensagens():
 
     if escolha_envio == "n":
         print ("\nEnviando mensagens para todos online...")
+        time.sleep(3)
         # pedir ao servidor ip e nome de todos os clientes online....
+
+        # pedir ao servidor IPs de todos os clientes online
+        servior_clientes_online_json = soquete_servidor.recv(1024).decode('utf-8')
+        servior_clientes_online = json.loads(servior_clientes_online_json)
+        
+        mensagem = raw_input("Digite sua mensagem: ")
+        mensagem_com_nome = nome + ": " + mensagem
+
+        for cliente_online, dados in servior_clientes_online.items():
+            if cliente_online != nome:
+                ip, porta = dados["endereco"]
+                soquete_enviar_mensagem = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+                destino = (ip, porta) 
+                print(destino)
+                soquete_enviar_mensagem.connect(destino)
+                soquete_enviar_mensagem.send(mensagem_com_nome.encode('utf-8'))
+
+        print("\nMensagens enviadas para todos online.")
 
     else:
         # verificar se o destinatario e conhecido
@@ -44,7 +63,7 @@ def enviarMensagens():
             mensagem_com_nome = nome + ": " + mensagem # se deixar a virgula na hora de enviar entende como uma tupla
             
             soquete_enviar_mensagem = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-            destino = (host_cliente, porta_cliente)
+            destino = (host_cliente, porta_cliente) # erro!!!!!!!!!!!!!
             soquete_enviar_mensagem.connect(destino)
             soquete_enviar_mensagem.send(mensagem_com_nome.encode('utf-8'))
             
@@ -56,9 +75,33 @@ def enviarMensagens():
 
             # indicar ao servidor que o cliente e conhecido: 'd'
             soquete_servidor.send("d".encode('utf-8'))
+            time.sleep(2)
             soquete_servidor.send(destinatario.encode('utf-8'))
+            time.sleep(2)
+
+            dados_destinatario_json = soquete_servidor.recv(1024).decode('utf-8')
+            dados_destinatario = json.loads(dados_destinatario_json)
             
-            time.sleep(10)
+            if dados_destinatario:
+                mensagem = raw_input("Digite sua mensagem: ")
+                mensagem_com_nome = nome + ": " + mensagem
+
+                ip, porta = dados_destinatario["endereco"]
+
+                # atualizando lista de clientes conhecidos
+                endereco_cliente[destinatario] = dados_destinatario
+
+                destino = (host_cliente, porta_cliente)
+                soquete_enviar_mensagem = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+                soquete_enviar_mensagem.connect(destino)
+                soquete_enviar_mensagem.send(mensagem_com_nome.encode('utf-8'))
+                #soquete_enviar_mensagem.close()
+                
+                print("\nMensagem enviada")
+            else:
+                print("\nDestinatario nao encontrado no servidor.")
+            
+            #time.sleep(10)
         
 
 # opcao 2
@@ -113,7 +156,6 @@ def listarClientesOnline():
         
         endereco_cliente[cliente] = {"endereco": (ip, porta), "status": status}
     
-    
     #print("\nLista de clientes conhecidos atualizada")
     
     #print(endereco_cliente)
@@ -134,7 +176,7 @@ soquete_servidor.connect(destino_servidor)
 
 # criar e abrir conexao com outro clientes
 host_cliente = '127.0.0.1'  
-porta_cliente = random.randint(5001, 6000) # sortear porta para clientes simultaneaos se conectarem entre si
+porta_cliente = random.randint(5002, 6000) # sortear porta para clientes simultaneaos se conectarem entre si
 soquete_cliente = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 origem = (host_cliente, porta_cliente)
 soquete_cliente.bind(origem)
@@ -144,15 +186,23 @@ thread_escutar_clientes = threading.Thread(target=escutarOutrosClientes, args=(s
 thread_escutar_clientes.daemon = True # thread sera encerrada quando o programa principal terminar
 thread_escutar_clientes.start()
 
-endereco_cliente = {} # ip de clientes que ja mandou mensagem antes
+endereco_cliente = {} # nome e a chave, endereco_cliente, endereco_servidor, status
 lista_mensagens_recebidas = [] # cliente vai armazenar suas proprias mensagens
 
 # inserir valor de teste no dicionario
-#endereco_cliente["joao"] = {"endereco": ('127.0.0.1', porta_cliente), "status": "online"}
+endereco_cliente["joao"] = {"endereco_cliente": ('127.0.0.1', 5001),"endereco_servidor": ('127.0.0.1', 5000), "status": "online"}
 
-# enviar o nome do cliente para o servidor 
+# enviar o nome e informacoes de conexao do cliente para o servidor 
 nome = raw_input("Informe seu nome: ")
+print(nome, porta_cliente)
+
 soquete_servidor.send(nome.encode('utf-8'))
+time.sleep(1)
+soquete_servidor.send(host_cliente.encode('utf-8'))
+time.sleep(1)
+soquete_servidor.send(str(porta_cliente).encode('utf-8'))
+
+endereco_cliente[nome] = {"endereco_cliente": (host_cliente, porta_cliente),"endereco_servidor": (host_servidor, porta_servidor), "status": "online"}
 
 # loop do menu de opcoes
 while True:

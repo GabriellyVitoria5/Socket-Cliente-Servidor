@@ -9,10 +9,13 @@ def atenderClientesSimultaneos(conexao, cliente):
     
     # receber o nome do cliente 
     nome = conexao.recv(1024).decode("utf-8")
+    porta_cliente = conexao.recv(1024).decode("utf-8")
+    ip_cliente = int(conexao.recv(1024).decode("utf-8"))
+    
     print "Conectado por:",  nome , cliente
 
     # atualizar ou criar o cliente no dicionario
-    lista_clientes[nome] = {"endereco": cliente, "status": "online"}
+    lista_clientes[nome] = {"endereco_cliente": cliente,"endereco_servidor": (ip_cliente, porta_cliente), "status": "online"}
 
     while True:
         
@@ -29,7 +32,15 @@ def atenderClientesSimultaneos(conexao, cliente):
                 # entregar a lista de todos os clientes que estao conectados
                 print nome, "vai enviar mensagens para todos online"
             
-                # ...
+                # filtrar apenas os clientes online
+                clientes_online = {}
+                for nome, dados in lista_clientes.items():
+                    if dados["status"] == "online":
+                        clientes_online[nome] = dados
+
+                # enviar json com apenas com os clientes online para o cliente            
+                clientes_online_json = json.dumps(clientes_online)
+                conexao.send(clientes_online_json.encode('utf-8'))
 
             else:
                 print nome, "vai enviar mensagem privada para um cliente"
@@ -44,7 +55,14 @@ def atenderClientesSimultaneos(conexao, cliente):
                 else:
                     print nome, "precisa de um ip"
                     destinatario = conexao.recv(1024).decode('utf-8')
-                    print "Destinatario recebido pelo servidor:", destinatario 
+                    print "Procurar ip de:", destinatario
+
+                    if destinatario in lista_clientes and lista_clientes[destinatario]["status"] == "online":
+                        dados_destinatario = json.dumps(lista_clientes[destinatario])
+                        conexao.send(dados_destinatario.encode('utf-8'))
+                    else:
+                        # mandar json vazio se o servidor nao conhece o destinatario
+                        conexao.send(json.dumps({}).encode('utf-8'))
 
         
         elif resposta_cliente_opcao == '2':
@@ -78,7 +96,7 @@ def atenderClientesSimultaneos(conexao, cliente):
             print "Finalizando conexao com", nome, "..."
 
             # atualizar status do cliente
-            lista_clientes[nome] = cliente, 'offline'
+            lista_clientes[nome] = cliente, (ip_cliente, porta_cliente),'offline'
 
             print(lista_clientes[nome])
             print(lista_clientes)
