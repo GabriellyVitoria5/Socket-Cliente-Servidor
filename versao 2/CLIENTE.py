@@ -39,7 +39,7 @@ def enviarMensagens():
 
         for cliente_online, dados in servior_clientes_online.items():
             if cliente_online != nome:
-                ip, porta = dados["endereco"]
+                ip, porta = dados["endereco_cliente"]
                 soquete_enviar_mensagem = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
                 destino = (ip, porta) 
                 print(destino)
@@ -63,7 +63,7 @@ def enviarMensagens():
             mensagem_com_nome = nome + ": " + mensagem # se deixar a virgula na hora de enviar entende como uma tupla
             
             soquete_enviar_mensagem = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-            destino = (host_cliente, porta_cliente) # erro!!!!!!!!!!!!!
+            destino = (host_cliente, porta_cliente)
             soquete_enviar_mensagem.connect(destino)
             soquete_enviar_mensagem.send(mensagem_com_nome.encode('utf-8'))
             
@@ -86,7 +86,7 @@ def enviarMensagens():
                 mensagem = raw_input("Digite sua mensagem: ")
                 mensagem_com_nome = nome + ": " + mensagem
 
-                ip, porta = dados_destinatario["endereco"]
+                ip, porta = dados_destinatario["endereco_cliente"]
 
                 # atualizando lista de clientes conhecidos
                 endereco_cliente[destinatario] = dados_destinatario
@@ -131,7 +131,7 @@ def listarIPsConhecidos():
                 dados["status"] = servidor_status_cliente[cliente]["status"]
 
     for cliente, dados in endereco_cliente.items():
-        ip, porta = dados["endereco"]
+        ip, porta = dados["endereco_cliente"]
         status = dados["status"]
         print cliente, "|", ip,"|", porta, "|", status
 
@@ -150,11 +150,11 @@ def listarClientesOnline():
     # imprimir dados e atualizar lista de clientes conhecidos
     print("\nNome | Endereco IP")
     for cliente, dados in servior_clientes_online.items():
-        ip, porta = dados["endereco"]
+        ip, porta = dados["endereco_cliente"]
         status = dados["status"]
         print cliente, ",", ip
         
-        endereco_cliente[cliente] = {"endereco": (ip, porta), "status": status}
+        endereco_cliente[cliente] = {"endereco_cliente": (ip, porta), "status": status}
     
     #print("\nLista de clientes conhecidos atualizada")
     
