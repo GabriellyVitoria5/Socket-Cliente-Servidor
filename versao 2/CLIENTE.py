@@ -64,6 +64,9 @@ def enviarMensagens():
 # opcao 2
 def listarMensagensRecebidas():
     print("\n............. Listar mensagens recebidas .............\n")
+    
+    if len(lista_mensagens_recebidas) == 0:
+        print("Voce nao tem mensagens")
     for mensagens in lista_mensagens_recebidas:
         print(mensagens)
 
