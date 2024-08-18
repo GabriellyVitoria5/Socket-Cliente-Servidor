@@ -84,23 +84,24 @@ def enviarMensagens():
             soquete_servidor.send(destinatario.encode('utf-8'))
             time.sleep(2)
 
-            dados_destinatario_json = soquete_servidor.recv(1024).decode('utf-8')
-            dados_destinatario = json.loads(dados_destinatario_json)
+            servidor_dados_destinatario_json = soquete_servidor.recv(1024).decode('utf-8')
+            dados_destinatario = json.loads(servidor_dados_destinatario_json)
             
             if dados_destinatario:
                 mensagem = raw_input("Digite sua mensagem: ")
                 mensagem_com_nome = nome + ": " + mensagem
 
-                ip, porta = dados_destinatario["endereco_cliente"]
-
                 # atualizando lista de clientes conhecidos
                 endereco_cliente[destinatario] = dados_destinatario
 
-                destino = (host_cliente, porta_cliente)
                 soquete_enviar_mensagem = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-                soquete_enviar_mensagem.connect(destino)
+
+                ip, porta = dados_destinatario["endereco_cliente"]
+                endereco_destinatario = (ip, porta)
+                print(endereco_destinatario)
+
+                soquete_enviar_mensagem.connect(endereco_destinatario)
                 soquete_enviar_mensagem.send(mensagem_com_nome.encode('utf-8'))
-                #soquete_enviar_mensagem.close()
                 
                 print("\nMensagem enviada")
             else:
