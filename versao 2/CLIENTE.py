@@ -165,8 +165,9 @@ def listarClientesOnline():
     # receber os dados dos cliente online em json e transformar em dicionario
     servidor_resposta_clientes_online_json = soquete_servidor.recv(1024).decode('utf-8')
     servior_clientes_online = json.loads(servidor_resposta_clientes_online_json)
-    print(servior_clientes_online)
+    #print(servior_clientes_online)
 
+    cont = 0
     # imprimir dados e atualizar lista de clientes conhecidos
     print("\nNome | Endereco IP | Porta")
     for cliente, dados in servior_clientes_online.items():
@@ -174,13 +175,15 @@ def listarClientesOnline():
         ip_s, porta_s = dados["endereco_servidor"]
         status = dados["status"]
         print cliente, ",", ip_c, ",", porta_c
+
+        if cliente not in endereco_cliente:
+            cont += 1
         
+        # atualizar lista de clientes conhecidos se houver clientes novos
         endereco_cliente[cliente] = {"endereco_cliente": (ip_c, porta_c), "endereco_servidor": (ip_s, porta_s),"status": status}
-    
-    #print("\nLista de clientes conhecidos atualizada")
-    
-    #print(endereco_cliente)
         
+    if cont > 0:
+        print("\nLista de clientes conhecidos atualizada")
 
 # opcao 5
 def desconectarDoServidor():

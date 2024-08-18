@@ -87,10 +87,15 @@ def atenderClientesSimultaneos(conexao, cliente):
                 if dados["status"] == "online":
                     clientes_online[nome] = dados
 
-            # enviar json com apenas com os clientes online para o cliente            
-            clientes_online_json = json.dumps(clientes_online)
-            conexao.send(clientes_online_json.encode('utf-8'))
+            if len(clientes_online) > 0:
 
+                # enviar json com apenas com os clientes online para o cliente            
+                clientes_online_json = json.dumps(clientes_online)
+                conexao.send(clientes_online_json.encode('utf-8'))
+
+            else:
+                conexao.send(json.dumps({}).encode('utf-8'))
+                
             print("Dados sobre os clientes online enviados")
            
         elif resposta_cliente_opcao == '5':
