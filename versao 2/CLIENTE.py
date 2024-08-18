@@ -63,24 +63,32 @@ def enviarMensagens():
         
         if destinatario in endereco_cliente:
 
-            # indicar ao servidor que o cliente e conhecido: 'c'
-            soquete_servidor.send("c".encode('utf-8'))
+            # continuar verificacao de cliente online antes de enviar mensagem, confirmar com o servidor antes.....
+            status = endereco_cliente[destinatario]["status"]
 
-            # enviar mensagem deireto para o cliente
-            mensagem = raw_input("Digite sua mensagem: ")
-            mensagem_com_nome = nome + ": " + mensagem # se deixar a virgula na hora de enviar entende como uma tupla
-            
-            # mantando o socket
-            soquete_enviar_mensagem = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-            porta, ip = endereco_cliente[destinatario]["endereco_cliente"]
-            
-            endereco_destinatario = (ip, porta)
-            print(endereco_destinatario)
-            
-            soquete_enviar_mensagem.connect(endereco_destinatario)
-            soquete_enviar_mensagem.send(mensagem_com_nome.encode('utf-8'))
-            
-            print("\nMensagem enviada")
+            if status == "online":
+
+                # indicar ao servidor que o cliente e conhecido: 'c'
+                soquete_servidor.send("c".encode('utf-8'))
+
+                # enviar mensagem deireto para o cliente
+                mensagem = raw_input("Digite sua mensagem: ")
+                mensagem_com_nome = nome + ": " + mensagem # se deixar a virgula na hora de enviar entende como uma tupla
+                
+                # mantando o socket
+                soquete_enviar_mensagem = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+                porta, ip = endereco_cliente[destinatario]["endereco_cliente"]
+                
+                endereco_destinatario = (ip, porta)
+                print(endereco_destinatario)
+                
+                soquete_enviar_mensagem.connect(endereco_destinatario)
+                soquete_enviar_mensagem.send(mensagem_com_nome.encode('utf-8'))
+                
+                print("\nMensagem enviada")
+
+            else:
+                print("\nCliente nao esta online, nao foi possivel enviar mensagem")
 
         else:
             # pedir ao servidor o endereco do destinatario
