@@ -39,12 +39,20 @@ def enviarMensagens():
 
         for cliente_online, dados in servior_clientes_online.items():
             if cliente_online != nome:
-                ip, porta = dados["endereco_cliente"]
+                ip_c, porta_c = dados["endereco_cliente"]
+                ip_s, porta_s = dados["endereco_cliente"]
                 soquete_enviar_mensagem = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-                destino = (ip, porta) 
-                print(destino)
-                soquete_enviar_mensagem.connect(destino)
+                endereco_destinatario = (ip_c, porta_c)
+                endereco_destinatario_servidor = (ip_s, porta_s)
+                status = dados["status"]
+                
+                #print(endereco_destinatario)
+                soquete_enviar_mensagem.connect(endereco_destinatario)
                 soquete_enviar_mensagem.send(mensagem_com_nome.encode('utf-8'))
+                
+
+                #atualizar lista de clientes conhecidos
+                endereco_cliente[cliente_online] = {"endereco_cliente": endereco_destinatario, "endereco_servidor": endereco_destinatario_servidor,"status": status}
 
         print("\nMensagens enviadas para todos online.")
 
@@ -124,7 +132,9 @@ def listarIPsConhecidos():
     print("\n........... Listar IP de clientes conhecidos ...........\n")
     print("Nome | Endereco IP | Porta | Status")
 
-    # atualizar o status dos clientes conhecidos, se estao online ou nao, anted de exibir
+    time.sleep(2)
+
+    # atualizar o status dos clientes conhecidos, se estao online ou nao, antes de exibir
 
     # cliente recebe json do servidor e converte de volta em dicionario
     servidor_status_cliente_json = soquete_servidor.recv(1024).decode('utf-8')
@@ -147,6 +157,10 @@ def listarIPsConhecidos():
 def listarClientesOnline():
     print("\n............. Listar clientes conectados .............\n")
     print("Solicitando ao servidor todos os clientes conectados agora...")
+
+    time.sleep(2)
+
+    # verificar opcao 4 quando nao tem clientes online no servidor.....
 
     # receber os dados dos cliente online em json e transformar em dicionario
     servidor_resposta_clientes_online_json = soquete_servidor.recv(1024).decode('utf-8')

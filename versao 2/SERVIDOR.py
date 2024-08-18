@@ -78,6 +78,8 @@ def atenderClientesSimultaneos(conexao, cliente):
 
         elif resposta_cliente_opcao == '4':
             print nome, "escolheu a opcao 4"
+
+            # verificar opcao 4 quando nao tem clientes online no servidor.....
             
             # filtrar apenas os clientes online
             clientes_online = {}
@@ -96,7 +98,7 @@ def atenderClientesSimultaneos(conexao, cliente):
             print "Finalizando conexao com", nome, "..."
 
             # atualizar status do cliente
-            lista_clientes[nome] = cliente, (ip_cliente, porta_cliente),'offline'
+            lista_clientes[nome] = {"endereco_cliente": (ip_cliente, porta_cliente), "endereco_servidor": cliente, "status": "offline"}
 
             print(lista_clientes[nome])
             print(lista_clientes)
