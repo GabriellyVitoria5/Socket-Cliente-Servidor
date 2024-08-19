@@ -52,6 +52,13 @@ def atenderClientesSimultaneos(conexao, cliente):
 
                 if cliente_conhece_destinatario == "c":
                     print nome, "ja conhece o ip do destinatario"
+
+                    # verificar se esse destinatario esta online
+                    cliente_nome_destinatario = conexao.recv(1024).decode('utf-8')
+                    status = lista_clientes[cliente_nome_destinatario]["status"]
+
+                    conexao.send(status.encode('utf-8'))
+                    
                 else:
                     print nome, "precisa de um ip"
                     destinatario = conexao.recv(1024).decode('utf-8')
