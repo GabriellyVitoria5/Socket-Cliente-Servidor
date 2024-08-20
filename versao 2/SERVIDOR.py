@@ -118,7 +118,6 @@ def atenderClientesSimultaneos(conexao, cliente):
             conexao.close()
             break
             
-
 host = '127.0.0.1'  # endereco IP do Servidor
 porta = 5000        # porta que o servidor esta
 soquete = socket.socket(socket.AF_INET, socket.SOCK_STREAM) # definir conexao com TCP

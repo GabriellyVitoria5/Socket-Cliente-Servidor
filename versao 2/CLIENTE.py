@@ -7,7 +7,7 @@ import json
 def escutarOutrosClientes(soquete):
      while True:
         try:
-            time.sleep(3) # tempo para o print nao sobrepor o interacao com o menu da thread de conexao com o servidor
+            time.sleep(3) # tempo para o print nao sobrepor a interacao com o menu da thread de conexao com o servidor
             conexao, cliente = soquete.accept()
             mensagem = conexao.recv(1024)
             lista_mensagens_recebidas.append(mensagem)
@@ -67,13 +67,10 @@ def enviarMensagens():
 
             # indicar ao servidor que o cliente e conhecido: 'c'
             soquete_servidor.send("c".encode('utf-8'))
+            time.sleep(1)
 
-            time.sleep(2)
-
-            # enviar o nome do destinatario
             soquete_servidor.send(destinatario.encode('utf-8'))
-
-            time.sleep(2)
+            time.sleep(1)
 
             # receber do servidor status do destinatario
             servidor_status_destinatario = soquete_servidor.recv(1024).decode('utf-8')
@@ -84,11 +81,11 @@ def enviarMensagens():
                 mensagem = raw_input("Digite sua mensagem: ")
                 mensagem_com_nome = nome + ": " + mensagem # se deixar a virgula na hora de enviar entende como uma tupla
                 
-                # mantando o socket
+                # montando o socket
                 soquete_enviar_mensagem = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-                ip, porta = endereco_cliente[destinatario]["endereco_cliente"]
+                ip_destinatario, porta_destinatario = endereco_cliente[destinatario]["endereco_cliente"]
                 
-                endereco_destinatario = (ip, porta)
+                endereco_destinatario = (porta_destinatario, ip_destinatario)
                 print(endereco_destinatario)
                 
                 soquete_enviar_mensagem.connect(endereco_destinatario)
@@ -105,9 +102,9 @@ def enviarMensagens():
 
             # indicar ao servidor que o cliente e conhecido: 'd'
             soquete_servidor.send("d".encode('utf-8'))
-            time.sleep(2)
+            time.sleep(1)
             soquete_servidor.send(destinatario.encode('utf-8'))
-            time.sleep(2)
+            time.sleep(1)
 
             servidor_dados_destinatario_json = soquete_servidor.recv(1024).decode('utf-8')
             dados_destinatario = json.loads(servidor_dados_destinatario_json)
@@ -131,8 +128,6 @@ def enviarMensagens():
                 print("\nMensagem enviada")
             else:
                 print("\nDestinatario nao encontrado no servidor.")
-            
-            #time.sleep(10)
         
 
 # opcao 2
@@ -210,7 +205,7 @@ def desconectarDoServidor():
 
 # criar e abrir conexao com servidor
 host_servidor = '127.0.0.1'     
-porta_servidor = 5000  # porta que o Servidor esta
+porta_servidor = 5000  
 soquete_servidor = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 destino_servidor = (host_servidor, porta_servidor)
 soquete_servidor.connect(destino_servidor)
@@ -229,9 +224,6 @@ thread_escutar_clientes.start()
 
 endereco_cliente = {} # nome e a chave, endereco_cliente, endereco_servidor, status
 lista_mensagens_recebidas = [] # cliente vai armazenar suas proprias mensagens
-
-# inserir valor de teste no dicionario
-#endereco_cliente["joao"] = {"endereco_cliente": ('127.0.0.1', 5001),"endereco_servidor": ('127.0.0.1', 5000), "status": "online"}
 
 # enviar o nome e informacoes de conexao do cliente para o servidor 
 nome = raw_input("Informe seu nome: ")
